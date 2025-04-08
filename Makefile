@@ -204,9 +204,9 @@ endif
 controller-js/coq-fs-core.js: COQVM = no
 controller-js/coq-fs-core.js: coq_boot
 	dune build --profile=release --display=quiet $(PKG_SET_WEB) etc/META.threads
-	for i in $$(find $(_CCROOT)/plugins -name *.cma); do wasm_of_ocaml --dynlink $$i; done
-	for i in $$(find _build/install/default/lib/coq-lsp/serlib -wholename */*.cma); do wasm_of_ocaml --dynlink $$i; done
-	for i in $$(find _build/install/default/lib/coq-waterproof/plugin -name *.cma); do wasm_of_ocaml --dynlink $$i; done
+	for i in $$(find $(_CCROOT)/plugins -name *.cma); do wasm_of_ocaml $$i; done
+	for i in $$(find _build/install/default/lib/coq-lsp/serlib -wholename */*.cma); do wasm_of_ocaml $$i; done
+	for i in $$(find _build/install/default/lib/coq-waterproof/plugin -name *.cma); do wasm_of_ocaml $$i; done
 	wasm_of_ocaml build-fs -o controller-js/coq-fs-core.js \
 	    $$(find $(_CCROOT)/                          \( -wholename '*/plugins/*/*.js' -or -wholename '*/META' \) -printf "%p:/static/lib/$(COQ_CORE_NAME)/%P ") \
 	    $$(find _build/install/default/lib/coq-lsp/  \( -wholename '*/serlib/*/*.js'  -or -wholename '*/META' \) -printf "%p:/static/lib/coq-lsp/%P ") \
