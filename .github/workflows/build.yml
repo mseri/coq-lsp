@@ -10,6 +10,7 @@ on:
       - v8.17
       - v8.16
       - v8.15
+      - wasm-test
   pull_request:
     branches:
       - main
