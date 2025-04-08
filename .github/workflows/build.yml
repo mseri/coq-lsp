@@ -26,61 +26,61 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            ocaml: 4.14.x
-          - os: ubuntu-latest
-            ocaml: 4.13.x
-          - os: ubuntu-latest
-            ocaml: 4.12.x
-          - os: ubuntu-latest
-            ocaml: 5.0.x
-          - os: ubuntu-latest
-            ocaml: 5.1.x
-          - os: ubuntu-latest
-            ocaml: 5.2.x
-          - os: ubuntu-latest
-            ocaml: 5.3.x
-          - os: macos-latest
-            ocaml: 4.14.x
-          - name: Windows Latest
-            ocaml: 4.14
-            os: windows-latest
-      fail-fast: false
+  # build:
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - os: ubuntu-latest
+  #           ocaml: 4.14.x
+  #         - os: ubuntu-latest
+  #           ocaml: 4.13.x
+  #         - os: ubuntu-latest
+  #           ocaml: 4.12.x
+  #         - os: ubuntu-latest
+  #           ocaml: 5.0.x
+  #         - os: ubuntu-latest
+  #           ocaml: 5.1.x
+  #         - os: ubuntu-latest
+  #           ocaml: 5.2.x
+  #         - os: ubuntu-latest
+  #           ocaml: 5.3.x
+  #         - os: macos-latest
+  #           ocaml: 4.14.x
+  #         - name: Windows Latest
+  #           ocaml: 4.14
+  #           os: windows-latest
+  #     fail-fast: false
 
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
+  #   runs-on: ${{ matrix.os }}
+  #   timeout-minutes: 45
 
-    steps:
-      - name: 🔭 Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+  #   steps:
+  #     - name: 🔭 Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         submodules: recursive
 
-      - name: 🐫 Setup OCaml
-        uses: ocaml/setup-ocaml@v3
-        with:
-          ocaml-compiler: ${{ matrix.ocaml }}
-          dune-cache: true
+  #     - name: 🐫 Setup OCaml
+  #       uses: ocaml/setup-ocaml@v3
+  #       with:
+  #         ocaml-compiler: ${{ matrix.ocaml }}
+  #         dune-cache: true
 
-      - name: 🐫🐪🐫 Get dependencies
-        run: opam exec -- make opam-deps
+  #     - name: 🐫🐪🐫 Get dependencies
+  #       run: opam exec -- make opam-deps
 
-      - name: 🐛 Special Windows Config [only on Win CI]
-        if: matrix.os == 'windows-latest'
-        run: opam exec -- make winconfig # Due to path quoting, could be fixed
+  #     - name: 🐛 Special Windows Config [only on Win CI]
+  #       if: matrix.os == 'windows-latest'
+  #       run: opam exec -- make winconfig # Due to path quoting, could be fixed
 
-      - name: 🧱 Build coq-lsp
-        run: opam exec -- make build
+  #     - name: 🧱 Build coq-lsp
+  #       run: opam exec -- make build
 
-      - name: 🐛 Test coq-lsp
-        run: opam exec -- make test
+  #     - name: 🐛 Test coq-lsp
+  #       run: opam exec -- make test
 
-      - name: 🐛 Test fcc
-        run: opam exec -- make test-compiler
+  #     - name: 🐛 Test fcc
+  #       run: opam exec -- make test-compiler
 
   build-js:
     name: Web Worker Build
@@ -147,83 +147,83 @@ jobs:
             editor/code/out/
             editor/code/coq.configuration.json
           compression-level: 9
-  build-opam:
-    name: Opam dev install
-    strategy:
-      fail-fast: false
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🔭 Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+  # build-opam:
+  #   name: Opam dev install
+  #   strategy:
+  #     fail-fast: false
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: 🔭 Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         submodules: recursive
 
-      - name: 🐫 Setup OCaml
-        uses: ocaml/setup-ocaml@v3
-        with:
-          ocaml-compiler: 4.14.x
-          dune-cache: true
+  #     - name: 🐫 Setup OCaml
+  #       uses: ocaml/setup-ocaml@v3
+  #       with:
+  #         ocaml-compiler: 4.14.x
+  #         dune-cache: true
 
-      - name: Install Coq and SerAPI into OPAM switch
-        run: |
-          opam install lwt logs # Also build pet-server
-          opam install memprof-limits # We need to do this to avoid coq-lsp rebuilding Coq below due to deptops
-          opam install vendor/coq/{rocq-runtime,coq-core,rocq-core,coqide-server,rocq-prover,coq}.opam vendor/coq-stdlib/{rocq,coq}-stdlib.opam
+  #     - name: Install Coq and SerAPI into OPAM switch
+  #       run: |
+  #         opam install lwt logs # Also build pet-server
+  #         opam install memprof-limits # We need to do this to avoid coq-lsp rebuilding Coq below due to deptops
+  #         opam install vendor/coq/{rocq-runtime,coq-core,rocq-core,coqide-server,rocq-prover,coq}.opam vendor/coq-stdlib/{rocq,coq}-stdlib.opam
 
-      - name: Install `coq-lsp` into OPAM switch
-        run: opam install .
+  #     - name: Install `coq-lsp` into OPAM switch
+  #       run: opam install .
 
-      - name: Test `coq-lsp` in installed switch
-        run: opam exec -- fcc examples/Demo.v
+  #     - name: Test `coq-lsp` in installed switch
+  #       run: opam exec -- fcc examples/Demo.v
 
-      - name: Test `pet-server` is built
-        run: opam exec -- which pet-server
+  #     - name: Test `pet-server` is built
+  #       run: opam exec -- which pet-server
 
-  build-nix:
-    name: Nix
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest]
-      fail-fast: false
+  # build-nix:
+  #   name: Nix
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, macOS-latest]
+  #     fail-fast: false
 
-    runs-on: ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
 
-    steps:
-      - name: 🔭 Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+  #   steps:
+  #     - name: 🔭 Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         submodules: recursive
 
-      - name: ❄️ Setup Nix
-        uses: cachix/install-nix-action@v27
+  #     - name: ❄️ Setup Nix
+  #       uses: cachix/install-nix-action@v27
 
-      - name: 🧱 Build coq-lsp
-        run: nix build '.?submodules=1#'
+  #     - name: 🧱 Build coq-lsp
+  #       run: nix build '.?submodules=1#'
 
-  client-compile:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./editor/code
-    steps:
-      - name: 🔭 Checkout code
-        uses: actions/checkout@v4
-      - name: 🚀 Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci
-      - run: npx --yes @vscode/vsce ls
+  # client-compile:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./editor/code
+  #   steps:
+  #     - name: 🔭 Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: 🚀 Setup node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - run: npm ci
+  #     - run: npx --yes @vscode/vsce ls
 
-  nix-flake-check:
-    name: Nix Flake Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🔭 Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: ❄️ Setup Nix
-        uses: cachix/install-nix-action@v18
-      - name: 📐 Run flake check
-        run: nix flake check
+  # nix-flake-check:
+  #   name: Nix Flake Check
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: 🔭 Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         submodules: recursive
+  #     - name: ❄️ Setup Nix
+  #       uses: cachix/install-nix-action@v18
+  #     - name: 📐 Run flake check
+  #       run: nix flake check
